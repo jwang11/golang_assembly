@@ -49,22 +49,40 @@ func TestSum32(t *testing.T) {
 	}
 }
 	
-func TestVAdd32(t *testing.T) {
-	var a[16] int32
-	var b[16] int32
+func TestVAdd32AVX512(t *testing.T) {
+	var a[512] int32
+	var b[512] int32
 	var sum1 int32
 	sum1 = 0
-	for i := 0; i < 16; i++ {
+	for i := 0; i < 512; i++ {
 		a[i] = int32(i * i + 1);
 		b[i] = int32(i + 1);
 		sum1 += a[i] + b[i]
 	}
     var sum2 int32
-	sum2 = VAdd32(a[:], b[:])
+	sum2 = VAdd32AVX512(a[:], b[:])
 	if sum1 != sum2	{
-		t.Errorf("VAdd32 should return %d, but %d", sum1, sum2)
+		t.Errorf("VAdd32AVX512 should return %d, but %d", sum1, sum2)
 	}
 }
+
+func TestVAdd32AVX2(t *testing.T) {
+	var a[512] int32
+	var b[512] int32
+	var sum1 int32
+	sum1 = 0
+	for i := 0; i < 512; i++ {
+		a[i] = int32(i * i + 1);
+		b[i] = int32(i + 1);
+		sum1 += a[i] + b[i]
+	}
+    var sum2 int32
+	sum2 = VAdd32AVX2(a[:], b[:])
+	if sum1 != sum2	{
+		t.Errorf("VAdd32AVX2 should return %d, but %d", sum1, sum2)
+	}
+}
+
 
 func TestEqual(t *testing.T) {
 	if !Equal([]byte("hello"), []byte("hello")) {
@@ -78,3 +96,34 @@ func TestEqual(t *testing.T) {
 	}
 }
 
+func BenchmarkVAddAVX512(b *testing.B) {
+	var d1[1024] int32
+	var d2[1024] int32
+	for i := 0; i < 1024; i++ {
+		d1[i] = int32(i * i + 1);
+		d2[i] = int32(i + 1);
+	}
+
+    var sum2 int32 = 0
+	b.SetBytes(1024)
+	b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+		sum2 += VAdd32AVX512(d1[:], d2[:]) % 1024
+    }
+}
+
+func BenchmarkVAddAVX2(b *testing.B) {
+	var d1[1024] int32
+	var d2[1024] int32
+	for i := 0; i < 1024; i++ {
+		d1[i] = int32(i * i + 1);
+		d2[i] = int32(i + 1);
+	}
+
+    var sum2 int32 = 0
+	b.SetBytes(1024)
+	b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+		sum2 += VAdd32AVX2(d1[:], d2[:]) % 1024
+    }
+}
