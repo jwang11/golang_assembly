@@ -34,7 +34,7 @@ done:
   MOVQ SI, ret+24(FP)
   RET
 
-TEXT ·AAdd(SB), $64-56
+TEXT ·VAdd(SB), $64-56
   MOVQ p+0(FP), SI
   MOVQ q+24(FP), DI
   VMOVDQU32 (SI), Z1

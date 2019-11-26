@@ -11,7 +11,7 @@ func main() {
 		a[i] = i * i + 1;
 		b[i] = i + 1;
 	}
-	println(calc.AAdd(a[:], b[:]))
+	println(calc.VAdd(a[:], b[:]))
     println(calc.Sum([]int64{1, 2, 3, 4, 5}))
 	println(calc.Equal([]byte("hello"), []byte("hello")))
 	println(calc.Equal([]byte("hell"), []byte("hello")))
