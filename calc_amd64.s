@@ -36,7 +36,19 @@ start:
   MOVQ SI, ret+24(FP)
   RET
 
-TEXT ·VAdd(SB), $64-56
+TEXT ·Sum32(SB), $0-32
+  MOVQ $0, SI
+  MOVQ sl+0(FP), BX // &sl[0], addr of the first elem
+  MOVQ sl+8(FP), CX // len(sl)
+start:
+  ADDL (BX), SI
+  ADDQ $4,  BX
+  DECQ CX
+  JNZ  start
+  MOVL SI, ret+24(FP)
+  RET
+
+TEXT ·VAdd(SB), $88-56
   MOVQ p+0(FP), SI
   MOVQ q+24(FP), DI
   VMOVDQU32 (SI), Z1
@@ -44,16 +56,13 @@ TEXT ·VAdd(SB), $64-56
   VPADDD Z1, Z2, Z3
   VMOVDQU32 Z3, d0-64(SP)
 
-  MOVQ $0, SI
-  LEAQ d0-64(SP), BX //first element address 
-  MOVL len+8(FP), CX // len
-
-start:
-  ADDL (BX), SI
-  ADDQ $4, BX
-  DECL CX
-  JNZ  start
-  MOVQ SI, ret+48(FP)
+  LEAQ d0-64(SP), BX
+  MOVQ BX, 0(SP)
+  MOVQ len+8(FP), AX
+  MOVQ AX, 8(SP)
+  CALL ·Sum32(SB)
+  MOVL 24(SP), AX
+  MOVL AX, ret+48(FP)
   RET
 
 TEXT ·Equal(SB),7,$0
