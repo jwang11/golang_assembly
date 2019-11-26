@@ -48,7 +48,7 @@ start:
   MOVL SI, ret+24(FP)
   RET
 
-TEXT ·VAdd(SB), $88-56
+TEXT ·VAdd32(SB), $88-56
   MOVQ p+0(FP), SI
   MOVQ q+24(FP), DI
   VMOVDQU32 (SI), Z1

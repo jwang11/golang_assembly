@@ -36,8 +36,20 @@ func TestSum(t *testing.T) {
 		t.Errorf("Sum should return %d, but %d", sum1, sum2)
 	}
 }
+
+func TestSum32(t *testing.T) {
+	a := []int32{1, 2, 3, 4, 5}
+	var sum1, sum2 int32 = 0, 0
+	for _, x := range a {
+		sum1 += x
+	}
+    sum2 = Sum32(a)
+	if sum1 != sum2	{
+		t.Errorf("Sum32 should return %d, but %d", sum1, sum2)
+	}
+}
 	
-func TestVAdd(t *testing.T) {
+func TestVAdd32(t *testing.T) {
 	var a[16] int32
 	var b[16] int32
 	var sum1 int32
@@ -48,9 +60,9 @@ func TestVAdd(t *testing.T) {
 		sum1 += a[i] + b[i]
 	}
     var sum2 int32
-	sum2 = VAdd(a[:], b[:])
+	sum2 = VAdd32(a[:], b[:])
 	if sum1 != sum2	{
-		t.Errorf("VAdd should return %d, but %d", sum1, sum2)
+		t.Errorf("VAdd32 should return %d, but %d", sum1, sum2)
 	}
 }
 
