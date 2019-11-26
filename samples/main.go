@@ -4,12 +4,15 @@ import "golang_assembly"
 
 func main() {
 	println(calc.Add(8, 16))
+	println(calc.Sub(16, 8))
+	println(calc.Sub(8, 16))
 	println(calc.Inc(24))
-	var a[16] int
-	var b[16] int
+	println(calc.Dec(24))
+	var a[16] int32
+	var b[16] int32
 	for i := 0; i < 16; i++ {
-		a[i] = i * i + 1;
-		b[i] = i + 1;
+		a[i] = int32(i * i + 1);
+		b[i] = int32(i + 1);
 	}
 	println(calc.VAdd(a[:], b[:]))
     println(calc.Sum([]int64{1, 2, 3, 4, 5}))
