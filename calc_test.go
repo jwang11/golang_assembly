@@ -96,6 +96,22 @@ func TestEqual(t *testing.T) {
 	}
 }
 
+func BenchmarkVDotProd(b *testing.B) {
+	var d1[1024] int32
+	var d2[1024] int32
+	for i := 0; i < 1024; i++ {
+		d1[i] = int32(i + 1);
+		d2[i] = int32(2 * i);
+	}
+
+    var sum2 int32 = 0
+	b.SetBytes(1024)
+	b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+		sum2 += VDotProd(d1[:], d2[:]) % 1024
+    }
+}
+
 func BenchmarkVDotProdAVX512(b *testing.B) {
 	var d1[1024] int32
 	var d2[1024] int32
