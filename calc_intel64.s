@@ -26,8 +26,8 @@ TEXT ·Dec(SB), $0-16
 
 TEXT ·Sum(SB), $0-32
   MOVQ $0, SI
-  MOVQ sl+0(FP), BX // &sl[0]
-  MOVQ sl+8(FP), CX // len(sl)
+  MOVQ av+0(FP), BX // address of vector
+  MOVQ lv+8(FP), CX // len of vector
 start:
   ADDQ (BX), SI
   ADDQ $8, BX
@@ -38,8 +38,8 @@ start:
 
 TEXT ·Sum32(SB), $0-32
   MOVQ $0, SI
-  MOVQ sl+0(FP), BX // &sl[0]
-  MOVQ sl+8(FP), CX // len(sl)
+  MOVQ av+0(FP), BX // address of vector
+  MOVQ lv+8(FP), CX // len of vector
 start:
   ADDL (BX), SI
   ADDQ $4,  BX
@@ -48,12 +48,23 @@ start:
   MOVL SI, ret+24(FP)
   RET
 
+// func VDotProdAVX512(a[] int32, b[] int32) int32 
+// $96 denotes the size in bytes of the stack-frame.
+// $56 specifies the size of the arguments passed in by the caller.
 TEXT ·VDotProdAVX512(SB), $96-56
+// Move the address of a, address of b, and array length to registers
+// SI, DI, and CX respectively. For simplicity, we assume the length of
+// array a and b are equal and addresses have a 64-byte alignment.
   MOVQ a+0(FP), SI		// address of a 
   MOVQ b+24(FP), DI		// address of b
   MOVQ len+8(FP), CX 	// array length
-  VPXORD Z4, Z4, Z4
 
+// Z4 is an accumulator that sums all vector multiplication results.
+// Compute Z3 = Z1 * Z2 and Z4 = Z4 + Z3 using the VMOVDQU32, VPMULLD
+// and VPADDD instructions. If the array length is greater than 16, 
+// loop execution until we reach the end of array. Store Z4 to the stack
+// frame address, vr, which is 64 bytes (512 bits) long
+  VPXORD Z4, Z4, Z4
 start:
   VMOVDQU32 (SI), Z1
   VMOVDQU32 (DI), Z2
@@ -65,11 +76,13 @@ start:
   JNZ start
   VMOVDQU32 Z4, d0-64(SP)// vector result to stack		
 
+// Convert the vector result to a scalar result by summing the INT32 elements
+// and return the result.
   LEAQ d0-64(SP), BX
   MOVQ BX, 0(SP)
-  MOVQ $16, AX 			// array length
+  MOVQ $16, AX 		// array length
   MOVQ AX, 8(SP)
-  CALL ·Sum32(SB)
+  CALL ·Sum32(SB)	// invoke Sum32 to get scalar value
   MOVL 24(SP), AX
   MOVL AX, ret+48(FP)	// final result 
   RET
