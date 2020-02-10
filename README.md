@@ -9,3 +9,7 @@ func main() {
 	println(calc.Inc(24))
 }
 ```
+## run benchmark
+```
+go run -bench .
+```
