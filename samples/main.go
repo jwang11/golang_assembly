@@ -16,7 +16,7 @@ func main() {
 	}
 	println(calc.VAdd32AVX512(a[:], b[:]))
 	println(calc.VAdd32AVX2(a[:], b[:]))
-    println(calc.Sum([]int64{1, 2, 3, 4, 5}))
+	println(calc.Sum([]int64{1, 2, 3, 4, 5}))
 	println(calc.Equal([]byte("hello"), []byte("hello")))
 	println(calc.Equal([]byte("hell"), []byte("hello")))
 	println(calc.Equal([]byte("hella"), []byte("hello")))

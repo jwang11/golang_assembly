@@ -11,5 +11,5 @@ func main() {
 ```
 ## run benchmark
 ```
-go run -bench .
+go test -bench .
 ```
